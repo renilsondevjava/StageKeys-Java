@@ -11,7 +11,7 @@ public class Musica {
 
     // Construtor:
     // usado para criar objetos já preenchidos
-    public Musica(int id, String nome, String artista, String tom){
+    public Musica(int id, String nome, String artista, String tom) {
 
         // "this" referencia os atributos da própria classe
         this.id = id;
@@ -22,26 +22,28 @@ public class Musica {
 
     // Getter do ID, nome, artista, tom:
     // retorna o id, nome, artista e o tom da música
-    public int getId(){
+    public int getId() {
         return id;
     }
 
-    public String getNome(){
+    public String getNome() {
         return nome;
     }
 
-    public String getArtista(){
+    public String getArtista() {
         return artista;
     }
 
-    public String getTom(){
+    public String getTom() {
         return tom;
     }
 
     //métodos setters altera informação de nome, artista, tom
-    public void setNome(String nome) {this.nome = nome;}
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-    public void setArtista(String artista){
+    public void setArtista(String artista) {
         this.artista = artista;
     }
 

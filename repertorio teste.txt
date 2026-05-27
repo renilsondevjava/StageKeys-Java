@@ -1,0 +1,4 @@
+REPERTÓRIO: repertorio teste
+
+musica teste | aaaa | Tom: a
+zorra | zzz | Tom: z

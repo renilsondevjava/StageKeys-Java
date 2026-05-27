@@ -1,113 +1,86 @@
 package com.renilson.stagekeys;
 
-import java.util.ArrayList;
-import java.util.Scanner;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Scanner;
+import com.renilson.stagekeys.service.ArquivoService;
+import com.renilson.stagekeys.service.MusicaService;
+import java.util.Collections;
+import java.util.Comparator;
+import com.renilson.stagekeys.service.RepertorioService;
+
 
 public class Menu {
 
     //Scanner usado para capturar dados digitados pelo usuário
-    Scanner sc = new Scanner(System.in);
+    private Scanner sc = new Scanner(System.in);
+
+    private ArquivoService arquivoService =
+            new ArquivoService();
+
+    private MusicaService musicaService =
+            new MusicaService();
+
+    private RepertorioService repertorioService =
+            new RepertorioService();
 
     //lista geral de músicas do sistema
-    ArrayList<Musica> musicas = new ArrayList<>();
+    private ArrayList<Musica> musicas =
+            new ArrayList<>();
 
     //lista geral de repertorios do sistema
-    ArrayList<Repertorio> repertorios = new ArrayList<>();
+    private ArrayList<Repertorio> repertorios =
+            new ArrayList<>();
 
-    //metodo responsável por carregar dados iniciais do sistema
-    public void carregarDados() {
+    public void listarRepertorios(){
 
-        // Criação das músicas
-        Musica m1 = new Musica(
-                1,
-                "A Casa",
-                "Toque no Altar",
-                "D"
+        repertorioService.listarRepertorios(
+                repertorios
         );
 
-        Musica m2 = new Musica(
-                2,
-                "Raridade",
-                "Anderson Freire",
-                "G"
-        );
-
-        Musica m3 = new Musica(
-                3,
-                "Tú és Santo",
-                "Walmir Alencar",
-                "D"
-        );
-
-        // Criação dos repertórios
-        Repertorio r1 = new Repertorio(
-                1,
-                "Forró do GM"
-        );
-
-        Repertorio r2 = new Repertorio(
-                2,
-                "Marcinho Moral"
-        );
-
-        // adiciona músicas na lista geral
-        musicas.add(m1);
-        musicas.add(m2);
-        musicas.add(m3);
-
-        // adiciona repertórios na lista geral
-        repertorios.add(r1);
-        repertorios.add(r2);
-
-        // adiciona músicas dentro dos repertórios
-        r1.adicionarMusica(m1);
-        r1.adicionarMusica(m2);
-        r1.adicionarMusica(m3);
-
-        r2.adicionarMusica(m2);
-
-    }
-
-    //lista todos os repertórios cadastrados
-    public void listarRepertorios() {
-        //percorre lista de repertórios
-        for (Repertorio repertorio : repertorios) {
-
-            //exibe id e nome do repertório
-            System.out.println(
-                    "ID: " + repertorio.getId()
-                            + " | Nome: " + repertorio.getNome());
-        }
     }
 
     //busca repertório pelo ID e lista músicas dele
     public void buscarRepertorio() {
-        //pede ID do repertório
-        System.out.println("Digite o id do repertório: ");
+
+        System.out.println(
+                "Digite o id do repertório: "
+        );
 
         int idRepertorio = lerInt();
 
-        //método auxiliar responsável por buscar repertório pelo ID
-        Repertorio repertorio
-                = buscarRepertorioPorId(idRepertorio);
+        Repertorio repertorio =
+                repertorioService.buscarRepertorioPorId(
+                        repertorios,
+                        idRepertorio
+                );
 
-        //exibe repertório encontrado
-        System.out.println(
-                "Encontrado: " + repertorio.getNome()
-        );
+        if (repertorio != null) {
 
-        //percorre músicas do repertório encontrado
-        for (Musica musica : repertorio.getMusicas()) {
-
-            //exibe atributos da música
             System.out.println(
-                    "Música: " + musica.getNome() +
-                            " | Artista: " + musica.getArtista() +
-                            " | Tom: " + musica.getTom()
+                    "Encontrado: "
+                            + repertorio.getNome()
+            );
+
+            repertorio.ordenarMusicasPorNome();
+
+            for (Musica musica : repertorio.getMusicas()) {
+
+                System.out.println(
+                        "Música: " + musica.getNome()
+                                + " | Artista: "
+                                + musica.getArtista()
+                                + " | Tom: "
+                                + musica.getTom()
+                );
+
+            }
+
+        } else {
+
+            System.out.println(
+                    "Repertório não encontrado."
             );
 
         }
@@ -116,25 +89,11 @@ public class Menu {
 
     //adiciona novo repertório
     public void adicionarRepertorio() {
-        //pede ID do repertório
-        System.out.println("Digite o ID do repertório:");
 
-        int novoId = lerInt();
-
-        //verifica se ID já existe
-        Repertorio repertorioExistente =
-                buscarRepertorioPorId(novoId);
-
-//se encontrou repertório com mesmo ID
-        if (repertorioExistente != null) {
-
-            System.out.println(
-                    "Já existe um repertório com esse ID!"
-            );
-
-            return;
-
-        }
+        int novoId =
+                repertorioService.gerarNovoId(
+                        repertorios
+                );
 
         //limpa ENTER do Scanner
         sc.nextLine();
@@ -166,18 +125,19 @@ public class Menu {
 
         //método auxiliar responsável por buscar repertório pelo ID
         Repertorio repertorioEncontrado
-                = buscarRepertorioPorId(idRepertorioMusica);
+                =  repertorioService.buscarRepertorioPorId(
+                repertorios,
+                idRepertorioMusica
+        );
 
         // verifica se encontrou algum repertório
         if (repertorioEncontrado != null) {
-
-            // pede o ID da nova música
-            System.out.println("Digite o ID da música:");
-            int idMusica = lerInt();
-
+            int idMusica =
+                    musicaService.gerarNovoId(musicas);
             //verifica se já existe música com mesmo ID
             Musica musicaExistente =
-                    buscarMusicaPorId(idMusica);
+                    musicaService.buscarMusicaPorId(
+                            musicas,idMusica);
 
             //se encontrou música com mesmo ID
             if (musicaExistente != null) {
@@ -216,17 +176,93 @@ public class Menu {
             // adiciona música na lista geral de músicas
             musicas.add(novaMusica);
 
-            // adiciona música dentro do repertório encontrado
-            repertorioEncontrado.adicionarMusica(novaMusica);
+            boolean adicionou =
+                    repertorioEncontrado.adicionarMusica(novaMusica);
 
-            //mensagem de sucesso
-            System.out.println("Música adicionada com sucesso!");
+            if (adicionou){
+
+                System.out.println(
+                        "Música adicionada com sucesso!"
+                );
+
+            } else {
+
+                System.out.println(
+                        "Essa música já existe no repertório!"
+                );
+
+            }
 
         } else {
             // executa se nenhum repertório for encontrado
             System.out.println("Repertório não encontrado!");
 
         }
+    }
+
+    public void adicionarMusicaExistenteAoRepertorio() {
+
+        System.out.println(
+                "Digite o ID do repertório:"
+        );
+
+        int idRepertorio = lerInt();
+
+        Repertorio repertorio =
+                repertorioService.buscarRepertorioPorId(
+                        repertorios,
+                        idRepertorio
+                );
+
+        if (repertorio == null) {
+
+            System.out.println(
+                    "Repertório não encontrado."
+            );
+
+            return;
+
+        }
+
+        System.out.println(
+                "Digite o ID da música:"
+        );
+
+        int idMusica = lerInt();
+
+        Musica musica =
+                musicaService.buscarMusicaPorId(
+                        musicas,
+                        idMusica
+                );
+
+        if (musica == null) {
+
+            System.out.println(
+                    "Música não encontrada."
+            );
+
+            return;
+
+        }
+
+        boolean adicionou =
+                repertorio.adicionarMusica(musica);
+
+        if (adicionou){
+
+            System.out.println(
+                    "Música adicionada ao repertório!"
+            );
+
+        } else {
+
+            System.out.println(
+                    "Essa música já está no repertório!"
+            );
+
+        }
+
     }
 
     //metodo para remover musica
@@ -236,10 +272,20 @@ public class Menu {
 
         //usa método auxiliar para buscar musica
         Musica musicaRemover =
-                buscarMusicaPorId(id);
+                musicaService.buscarMusicaPorId(
+                        musicas,
+                        id
+                );
 
         //verifica se encontrou musica
         if (musicaRemover != null) {
+
+            for (Repertorio repertorio : repertorios) {
+
+                repertorio.getMusicas()
+                        .remove(musicaRemover);
+
+            }
 
             //remove musica da lista
             musicas.remove(musicaRemover);
@@ -261,7 +307,10 @@ public class Menu {
 
         //usa método auxiliar
         Musica musica =
-                buscarMusicaPorId(idMusica);
+                musicaService.buscarMusicaPorId(
+                        musicas,
+                        idMusica
+                );
 
         //verifica se encontrou música
         if (musica != null) {
@@ -279,6 +328,113 @@ public class Menu {
 
     }
 
+    public void buscarMusicaPorNome(){
+
+        sc.nextLine();
+
+        System.out.println(
+                "Digite o nome da música:"
+        );
+
+        String nomeBusca =
+                sc.nextLine().toLowerCase();
+
+        boolean encontrou = false;
+
+        for (Musica musica : musicas){
+
+            if (musica.getNome()
+                    .toLowerCase()
+                    .contains(nomeBusca)){
+
+                System.out.println(
+                        "ID: " + musica.getId()
+                                + " | Nome: "
+                                + musica.getNome()
+                                + " | Artista: "
+                                + musica.getArtista()
+                                + " | Tom: "
+                                + musica.getTom()
+                );
+
+                encontrou = true;
+
+            }
+
+        }
+
+        if (!encontrou){
+
+            System.out.println(
+                    "Nenhuma música encontrada."
+            );
+
+        }
+
+    }
+
+    public void buscarRepertorioPorNome(){
+
+        sc.nextLine();
+
+        System.out.println(
+                "Digite o nome do repertório:"
+        );
+
+        String nomeBusca = sc.nextLine();
+
+        repertorioService.buscarRepertorioPorNome(
+                repertorios,
+                nomeBusca
+        );
+
+    }
+
+
+    public void ordenarRepertoriosPorNome(){
+
+        repertorioService.ordenarRepertoriosPorNome(
+                repertorios
+        );
+
+        System.out.println(
+                "Repertórios ordenados!"
+        );
+
+    }
+
+    public void ordenarMusicasDoRepertorio(){
+
+        System.out.println(
+                "Digite o ID do repertório:"
+        );
+
+        int id = lerInt();
+
+        Repertorio repertorio =
+                repertorioService.buscarRepertorioPorId(
+                        repertorios,
+                        id
+                );
+
+        if (repertorio != null){
+
+            repertorio.ordenarMusicasPorNome();
+
+            System.out.println(
+                    "Músicas do repertório ordenadas!"
+            );
+
+        } else {
+
+            System.out.println(
+                    "Repertório não encontrado!"
+            );
+
+        }
+
+    }
+
     public void editarMusica() {
         //pede ID da música
         System.out.println("Digite o id da musica: ");
@@ -289,7 +445,10 @@ public class Menu {
         sc.nextLine();
 
         Musica musicaEditar =
-                buscarMusicaPorId(idMusica);
+                musicaService.buscarMusicaPorId(
+                        musicas,
+                        idMusica
+                );
 
         //verifica se encontrou musica
         if (musicaEditar != null) {
@@ -308,6 +467,8 @@ public class Menu {
         }
 
     }
+
+
 
     //método auxiliar para ler números inteiros com segurança
     public int lerInt(){
@@ -337,45 +498,6 @@ public class Menu {
 
     }
 
-    //método auxiliar responsável por buscar repertório pelo ID
-    public Repertorio buscarRepertorioPorId(int id) {
-
-        //percorre lista de repertórios
-        for (Repertorio repertorio : repertorios) {
-
-            //verifica se encontrou o ID
-            if (repertorio.getId() == id) {
-
-                //retorna o objeto encontrado
-                return repertorio;
-
-            }
-
-        }
-
-        //retorna null se não encontrar repertório
-        return null;
-
-    }
-
-    //método auxiliar responsável por buscar música pelo ID
-    public Musica buscarMusicaPorId(int id) {
-        //percorre lista de músicas
-        for (Musica musica : musicas) {
-
-            //verifica se encontrou o ID
-            if (musica.getId() == id) {
-
-                //retorna música encontrada
-                return musica;
-
-            }
-
-        }
-
-        //retorna null se não encontrar música
-        return null;
-    }
 
     //remover repertorio
     public void removerRepertorio() {
@@ -384,7 +506,10 @@ public class Menu {
 
         //usa método auxiliar para buscar repertório
         Repertorio repertorioRemover =
-                buscarRepertorioPorId(id);
+                repertorioService.buscarRepertorioPorId(
+                        repertorios,
+                        id
+                );
 
         //verifica se encontrou repertório
         if (repertorioRemover != null) {
@@ -392,10 +517,107 @@ public class Menu {
             //remove repertório da lista
             repertorios.remove(repertorioRemover);
 
-            System.out.println("Repertório " + repertorioRemover.getNome() +
-                    " removido com sucesso!");
+            System.out.println(
+                    "Repertório "
+                            + repertorioRemover.getNome()
+                            + " removido com sucesso!"
+            );
         } else {
             System.out.println("Repertório não encontrado.");
+        }
+
+    }
+    public void removerMusicaDoRepertorio(){
+
+        System.out.println(
+                "Digite o ID do repertório:"
+        );
+
+        int idRepertorio = lerInt();
+
+        Repertorio repertorio =
+                repertorioService.buscarRepertorioPorId(
+                        repertorios,
+                        idRepertorio);
+
+        if (repertorio != null){
+
+            System.out.println(
+                    "Digite o ID da música:"
+            );
+
+            int idMusica = lerInt();
+
+            boolean removeu =
+                    repertorio.removerMusica(idMusica);
+
+            if (removeu){
+
+                System.out.println(
+                        "Música removida do repertório!"
+                );
+
+            } else {
+
+                System.out.println(
+                        "Música não encontrada no repertório!"
+                );
+
+            }
+
+        } else {
+
+            System.out.println(
+                    "Repertório não encontrado!"
+            );
+
+        }
+
+    }
+
+    public void listarMusicasSemRepertorio(){
+
+        boolean encontrou = false;
+
+        for (Musica musica : musicas){
+
+            boolean estaEmRepertorio = false;
+
+            for (Repertorio repertorio : repertorios){
+
+                if (repertorio.getMusicas().contains(musica)){
+
+                    estaEmRepertorio = true;
+
+                    break;
+
+                }
+
+            }
+
+            if (!estaEmRepertorio){
+
+                System.out.println(
+                        "ID: "
+                                + musica.getId()
+                                + " | Nome: "
+                                + musica.getNome()
+                                + " | Artista: "
+                                + musica.getArtista()
+                );
+
+                encontrou = true;
+
+            }
+
+        }
+
+        if (!encontrou){
+
+            System.out.println(
+                    "Todas as músicas estão em repertórios."
+            );
+
         }
 
     }
@@ -410,7 +632,9 @@ public class Menu {
 
         //usa método auxiliar para buscar repertório
         Repertorio repertorioEditar =
-                buscarRepertorioPorId(id);
+                repertorioService.buscarRepertorioPorId(
+                        repertorios,
+                        id);
 
         //verifica se encontrou repertório
         if (repertorioEditar != null) {
@@ -435,298 +659,75 @@ public class Menu {
 
     }
 
-    //salva repertórios em arquivo TXT
-    public void salvarRepertoriosEmArquivo() {
+    public void exportarRepertorioTxt(){
 
-        try {
+        System.out.println(
+                "Digite o ID do repertório:"
+        );
 
-            //cria arquivo para escrita
-            FileWriter writer =
-                    new FileWriter("repertorios.txt");
+        int id = lerInt();
 
-            //percorre lista de repertórios
-            for (Repertorio repertorio : repertorios) {
+        Repertorio repertorio =
+                repertorioService.buscarRepertorioPorId(
+                        repertorios,
+                        id);
 
-                //escreve dados do repertório no arquivo
+        if (repertorio != null){
+
+            try {
+
+                FileWriter writer =
+                        new FileWriter(
+                                repertorio.getNome()
+                                        + ".txt"
+                        );
+
                 writer.write(
-                        repertorio.getId()
-                                + " - "
+                        "REPERTÓRIO: "
                                 + repertorio.getNome()
-                                + "\n"
+                                + "\n\n"
                 );
 
-            }
+                repertorio.ordenarMusicasPorNome();
 
-            //fecha arquivo
-            writer.close();
+                int contador = 1;
 
-            System.out.println(
-                    "Repertórios salvos em arquivo!"
-            );
+                for (Musica musica :
+                        repertorio.getMusicas()){
 
-        } catch (IOException e) {
-
-            System.out.println(
-                    "Erro ao salvar arquivo."
-            );
-
-        }
-
-    }
-
-    //salva músicas em arquivo TXT
-    public void salvarMusicasEmArquivo(){
-
-        try {
-
-            //cria arquivo para escrita
-            FileWriter writer =
-                    new FileWriter("musicas.txt");
-
-            //percorre lista de músicas
-            for (Musica musica : musicas){
-
-                //escreve dados da música no arquivo
-                writer.write(
-                        musica.getId()
-                                + " - "
-                                + musica.getNome()
-                                + " - "
-                                + musica.getArtista()
-                                + " - "
-                                + musica.getTom()
-                                + "\n"
-                );
-
-            }
-
-            //fecha arquivo
-            writer.close();
-
-            System.out.println(
-                    "Músicas salvas em arquivo!"
-            );
-
-        } catch (IOException e){
-
-            System.out.println(
-                    "Erro ao salvar músicas."
-            );
-
-        }
-
-    }
-
-    //salva relacionamento entre repertórios e músicas
-    public void salvarRelacionamentos(){
-
-        try {
-
-            //cria arquivo para escrita
-            FileWriter writer =
-                    new FileWriter("relacionamentos.txt");
-
-            //percorre repertórios
-            for (Repertorio repertorio : repertorios){
-
-                //percorre músicas do repertório
-                for (Musica musica : repertorio.getMusicas()){
-
-                    //salva relação repertório -> música
                     writer.write(
-                            repertorio.getId()
+                            contador
                                     + " - "
-                                    + musica.getId()
+                                    + musica.getNome()
+                                    + " | "
+                                    + musica.getArtista()
+                                    + " | Tom: "
+                                    + musica.getTom()
                                     + "\n"
                     );
 
-                }
-
-            }
-
-            //fecha arquivo
-            writer.close();
-
-            System.out.println(
-                    "Relacionamentos salvos!"
-            );
-
-        } catch (IOException e){
-
-            System.out.println(
-                    "Erro ao salvar relacionamentos."
-            );
-
-        }
-
-    }
-
-    //carrega repertórios do arquivo TXT
-    public void carregarRepertoriosDoArquivo(){
-
-        try {
-
-            //abre arquivo para leitura
-            BufferedReader reader =
-                    new BufferedReader(
-                            new FileReader("repertorios.txt")
-                    );
-
-            //variável para armazenar linha atual
-            String linha;
-
-            //lê linha por linha até acabar arquivo
-            while ((linha = reader.readLine()) != null){
-
-                //separa ID e nome usando " - "
-                String[] partes = linha.split(" - ");
-
-                //converte texto para número
-                int id = Integer.parseInt(partes[0]);
-
-                //pega nome do repertório
-                String nome = partes[1];
-
-                //cria objeto repertório
-                Repertorio repertorio =
-                        new Repertorio(id, nome);
-
-                //adiciona na lista
-                repertorios.add(repertorio);
-
-            }
-
-            //fecha arquivo
-            reader.close();
-
-            System.out.println(
-                    "Repertórios carregados do arquivo!"
-            );
-
-        } catch (IOException e){
-
-            System.out.println(
-                    "Erro ao carregar arquivo."
-            );
-
-        }
-
-    }
-
-    //carrega músicas do arquivo TXT
-    public void carregarMusicasDoArquivo(){
-
-        try {
-
-            //abre arquivo para leitura
-            BufferedReader reader =
-                    new BufferedReader(
-                            new FileReader("musicas.txt")
-                    );
-
-            //variável para armazenar linha atual
-            String linha;
-
-            //lê linha por linha até acabar arquivo
-            while ((linha = reader.readLine()) != null){
-
-                //separa dados usando " - "
-                String[] partes = linha.split(" - ");
-
-                //converte ID para número
-                int id = Integer.parseInt(partes[0]);
-
-                //pega dados da música
-                String nome = partes[1];
-                String artista = partes[2];
-                String tom = partes[3];
-
-                //cria objeto música
-                Musica musica =
-                        new Musica(
-                                id,
-                                nome,
-                                artista,
-                                tom
-                        );
-
-                //adiciona música na lista
-                musicas.add(musica);
-
-            }
-
-            //fecha arquivo
-            reader.close();
-
-            System.out.println(
-                    "Músicas carregadas do arquivo!"
-            );
-
-        } catch (IOException e){
-
-            System.out.println(
-                    "Erro ao carregar músicas."
-            );
-
-        }
-
-    }
-
-    //carrega relacionamentos entre repertórios e músicas
-    public void carregarRelacionamentos(){
-
-        try {
-
-            //abre arquivo para leitura
-            BufferedReader reader =
-                    new BufferedReader(
-                            new FileReader("relacionamentos.txt")
-                    );
-
-            //variável para armazenar linha atual
-            String linha;
-
-            //lê linha por linha
-            while ((linha = reader.readLine()) != null){
-
-                //separa IDs
-                String[] partes = linha.split(" - ");
-
-                //converte IDs para número
-                int idRepertorio =
-                        Integer.parseInt(partes[0]);
-
-                int idMusica =
-                        Integer.parseInt(partes[1]);
-
-                //busca objetos pelos IDs
-                Repertorio repertorio =
-                        buscarRepertorioPorId(idRepertorio);
-
-                Musica musica =
-                        buscarMusicaPorId(idMusica);
-
-                //verifica se encontrou os dois objetos
-                if (repertorio != null && musica != null){
-
-                    //recria relacionamento
-                    repertorio.adicionarMusica(musica);
+                    contador++;
 
                 }
 
+                writer.close();
+
+                System.out.println(
+                        "Repertório exportado!"
+                );
+
+            } catch (IOException e){
+
+                System.out.println(
+                        "Erro ao exportar repertório."
+                );
+
             }
 
-            //fecha arquivo
-            reader.close();
+        } else {
 
             System.out.println(
-                    "Relacionamentos carregados!"
-            );
-
-        } catch (IOException e){
-
-            System.out.println(
-                    "Erro ao carregar relacionamentos."
+                    "Repertório não encontrado!"
             );
 
         }
@@ -742,14 +743,28 @@ public class Menu {
         //loop do submenu
         while (executandoRepertorio) {
 
+            //título do menu
+            System.out.println("\n===== MENU REPERTÓRIOS =====");
+
             //opções do submenu
-            System.out.println("===== MENU REPERTÓRIOS =====");
             System.out.println("1 - Listar repertórios");
             System.out.println("2 - Buscar repertório");
-            System.out.println("3 - Adicionar repertório");
-            System.out.println("4 - Editar repertório");
-            System.out.println("5 - Remover repertório");
-            System.out.println("6 - Voltar");
+            System.out.println("3 - Buscar repertório por nome");
+            System.out.println("4 - Adicionar repertório");
+            System.out.println("5 - Editar repertório");
+            System.out.println("6 - Remover repertório");
+            System.out.println("7 - Adicionar música ao repertório");
+            System.out.println("8 - Remover música do repertório");
+            System.out.println("9 - Ordenar repertórios");
+            System.out.println(
+                    "10 - Ordenar músicas do repertório"
+            );
+
+            System.out.println(
+                    "11 - Exportar repertório TXT"
+            );
+
+            System.out.println("12 - Voltar");
 
             //captura opção digitada
             int opcao = lerInt();
@@ -766,18 +781,49 @@ public class Menu {
                     break;
 
                 case 3:
+                    buscarRepertorioPorNome();
+                    break;
+
+
+                case 4:
                     adicionarRepertorio();
                     break;
 
-                case 4:
+
+                case 5:
                     editarRepertorio();
                     break;
 
-                case 5:
+
+                case 6:
                     removerRepertorio();
                     break;
 
-                case 6:
+
+                case 7:
+                    adicionarMusicaExistenteAoRepertorio();
+                    break;
+
+
+                case 8:
+                    removerMusicaDoRepertorio();
+                    break;
+
+
+                case 9:
+                    ordenarRepertoriosPorNome();
+                    break;
+
+
+                case 10:
+                    ordenarMusicasDoRepertorio();
+                    break;
+
+
+                case 11:
+                    exportarRepertorioTxt();
+                    break;
+                case 12:
                     executandoRepertorio = false;
                     System.out.println("Voltando...");
                     break;
@@ -802,11 +848,15 @@ public class Menu {
 
             //opções do submenu
             System.out.println("===== MENU MÚSICAS =====");
-            System.out.println("1 - Buscar música");
-            System.out.println("2 - Adicionar música");
-            System.out.println("3 - Editar música");
-            System.out.println("4 - Remover música");
-            System.out.println("5 - Voltar");
+            System.out.println("1 - Listar músicas");
+            System.out.println("2 - Buscar música por ID");
+            System.out.println("3 - Buscar música por nome");
+            System.out.println("4 - Adicionar música");
+            System.out.println("5 - Editar música");
+            System.out.println("6 - Remover música");
+            System.out.println("7 - Ordenar músicas");
+            System.out.println("8 - Listar músicas sem repertório");
+            System.out.println("9 - Voltar");
 
             //captura opção digitada
             int opcao = lerInt();
@@ -815,28 +865,43 @@ public class Menu {
             switch (opcao) {
 
                 case 1:
-                    buscarMusica();
+                    musicaService.listarMusicas(musicas);
                     break;
 
                 case 2:
-                    adicionarMusica();
+                    buscarMusica();
                     break;
 
                 case 3:
-                    editarMusica();
+                    buscarMusicaPorNome();
                     break;
 
                 case 4:
-                    removerMusica();
+                    adicionarMusica();
                     break;
 
                 case 5:
+                    editarMusica();
+                    break;
+
+                case 6:
+                    removerMusica();
+                    break;
+
+                case 7:
+                    musicaService.ordenarMusicasPorNome(
+                            musicas
+                    );
+                    break;
+
+                case 8:
+                    listarMusicasSemRepertorio();
+                    break;
+
+                case 9:
                     executandoMusica = false;
                     System.out.println("Voltando...");
                     break;
-
-                default:
-                    System.out.println("Opção inválida.");
 
             }
 
@@ -853,11 +918,14 @@ public class Menu {
         musicas.clear();
 
         //carrega os dados iniciais antes do menu iniciar
-        carregarRepertoriosDoArquivo();
+        arquivoService.carregarRepertoriosDoArquivo(repertorios);
 
-        carregarMusicasDoArquivo();
+        arquivoService.carregarMusicasDoArquivo(musicas);
 
-        carregarRelacionamentos();
+        arquivoService.carregarRelacionamentos(
+                repertorios,
+                musicas
+        );
 
         //controla se o sistema continua aberto ou não
         boolean executando = true;
@@ -865,7 +933,16 @@ public class Menu {
         //loop principal do sistema
         while (executando) {
 
-            //exibe opções do menu
+            System.out.println(
+                    "\nMúsicas cadastradas: "
+                            + musicas.size()
+            );
+
+            System.out.println(
+                    "Repertórios cadastrados: "
+                            + repertorios.size()
+            );
+
             System.out.println("1 - Menu repertórios");
             System.out.println("2 - Menu músicas");
             System.out.println("3 - Sair");
@@ -886,11 +963,13 @@ public class Menu {
 
                 case 3:
 
-                    salvarRepertoriosEmArquivo();
+                    arquivoService.salvarRepertoriosEmArquivo(repertorios);
 
-                    salvarMusicasEmArquivo();
+                    arquivoService.salvarMusicasEmArquivo(musicas);
 
-                    salvarRelacionamentos();
+                    arquivoService.salvarRelacionamentosEmArquivo(repertorios);
+
+                    sc.close();
 
                     executando = false;
 
