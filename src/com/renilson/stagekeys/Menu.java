@@ -22,6 +22,12 @@ public class Menu {
     private MusicaService musicaService =
             new MusicaService();
 
+    public ArrayList<Musica> getMusicas() {
+
+        return musicas;
+
+    }
+
     private RepertorioService repertorioService =
             new RepertorioService();
 
@@ -32,6 +38,33 @@ public class Menu {
     //lista geral de repertorios do sistema
     private ArrayList<Repertorio> repertorios =
             new ArrayList<>();
+
+    public ArrayList<Repertorio> getRepertorios(){
+
+        return repertorios;
+
+    }
+
+    public void carregarDados(){
+
+        repertorios.clear();
+
+        musicas.clear();
+
+        arquivoService.carregarRepertoriosDoArquivo(
+                repertorios
+        );
+
+        arquivoService.carregarMusicasDoArquivo(
+                musicas
+        );
+
+        arquivoService.carregarRelacionamentos(
+                repertorios,
+                musicas
+        );
+
+    }
 
     public void listarRepertorios(){
 
@@ -731,6 +764,40 @@ public class Menu {
             );
 
         }
+
+    }
+
+    public int gerarProximoIdRepertorio() {
+
+        int maiorId = 0;
+
+        for (Repertorio repertorio : repertorios) {
+
+            if (repertorio.getId() > maiorId) {
+
+                maiorId = repertorio.getId();
+
+            }
+
+        }
+
+        return maiorId + 1;
+
+    }
+
+    public void salvarDados() {
+
+        arquivoService.salvarRepertoriosEmArquivo(
+                repertorios
+        );
+
+        arquivoService.salvarMusicasEmArquivo(
+                musicas
+        );
+
+        arquivoService.salvarRelacionamentosEmArquivo(
+                repertorios
+        );
 
     }
 
