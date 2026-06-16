@@ -96,6 +96,20 @@ public class StageKeysFX extends Application {
                 "Nome da música"
         );
 
+        TextField campoArtista =
+                new TextField();
+
+        campoArtista.setPromptText(
+                "Artista"
+        );
+
+        TextField campoTom =
+                new TextField();
+
+        campoTom.setPromptText(
+                "Tom"
+        );
+
         Button botaoAdicionar =
                 new Button("Adicionar");
 
@@ -130,10 +144,18 @@ public class StageKeysFX extends Application {
 
         });
 
+
+
         Button botaoAdicionarMusica =
                 new Button(
                         "Adicionar Música"
                 );
+
+        Button botaoRemoverMusica =
+                new Button(
+                        "Remover Música"
+                );
+
         botaoAdicionarMusica.setOnAction(event -> {
 
             String repertorioSelecionado =
@@ -142,6 +164,12 @@ public class StageKeysFX extends Application {
 
             String nomeMusica =
                     campoMusica.getText();
+
+            String artista =
+                    campoArtista.getText();
+
+            String tom =
+                    campoTom.getText();
 
             if (repertorioSelecionado == null) {
 
@@ -158,6 +186,19 @@ public class StageKeysFX extends Application {
                 return;
 
             }
+
+            if (artista.isBlank()) {
+
+                artista = "Sem artista";
+
+            }
+
+            if (tom.isBlank()) {
+
+                tom = "Sem tom";
+
+            }
+
             int novoId =
                     1;
 
@@ -197,8 +238,8 @@ public class StageKeysFX extends Application {
                         new Musica(
                                 novoId,
                                 nomeMusica,
-                                "Sem artista",
-                                "Sem tom"
+                                artista,
+                                tom
                         );
 
                 menu.getMusicas()
@@ -218,12 +259,83 @@ public class StageKeysFX extends Application {
                         );
 
                 campoMusica.clear();
+                campoArtista.clear();
+                campoTom.clear();
 
             }
 
         });
 
+        botaoRemoverMusica.setOnAction(event -> {
 
+            String repertorioSelecionado =
+                    lista.getSelectionModel()
+                            .getSelectedItem();
+
+            String musicaSelecionada =
+                    listaMusicas.getSelectionModel()
+                            .getSelectedItem();
+
+            if (repertorioSelecionado == null
+                    || musicaSelecionada == null) {
+
+                return;
+
+            }
+
+            Repertorio repertorioEncontrado = null;
+
+            for (Repertorio repertorio :
+                    menu.getRepertorios()) {
+
+                if (repertorio.getNome()
+                        .equals(repertorioSelecionado)) {
+
+                    repertorioEncontrado =
+                            repertorio;
+
+                    break;
+
+                }
+
+            }
+
+            Musica musicaEncontrada = null;
+
+            for (Musica musica :
+                    repertorioEncontrado.getMusicas()) {
+
+                if (musica.getNome()
+                        .equals(musicaSelecionada)) {
+
+                    musicaEncontrada =
+                            musica;
+
+                    break;
+
+                }
+
+            }
+
+            if (musicaEncontrada != null) {
+
+                repertorioEncontrado
+                        .getMusicas()
+                        .remove(
+                                musicaEncontrada
+                        );
+
+                listaMusicas
+                        .getItems()
+                        .remove(
+                                musicaSelecionada
+                        );
+
+                menu.salvarDados();
+
+            }
+
+        });
 
         VBox layout = new VBox();
 
@@ -238,7 +350,19 @@ public class StageKeysFX extends Application {
         );
 
         layout.getChildren().add(
+                campoArtista
+        );
+
+        layout.getChildren().add(
+                campoTom
+        );
+
+        layout.getChildren().add(
                 botaoAdicionarMusica
+        );
+
+        layout.getChildren().add(
+                botaoRemoverMusica
         );
 
         layout.getChildren().add(
