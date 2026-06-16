@@ -7,3 +7,6 @@
 7;maria mariazinha;Sem artista;Sem tom
 8;João de Barro;Maria Gadu;Dm
 9;Pirulito Baby;desconhecido;Em
+10;musica nova;artista novo;A
+11;musicatest;aaa;aaa
+13;musicarenilson;a;a

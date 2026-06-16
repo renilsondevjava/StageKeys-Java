@@ -8,6 +8,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
+import java.util.ArrayList;
 
 public class StageKeysFX extends Application {
 
@@ -144,11 +145,14 @@ public class StageKeysFX extends Application {
 
         });
 
-
-
         Button botaoAdicionarMusica =
                 new Button(
                         "Adicionar Música"
+                );
+
+        Button botaoRemoverRepertorio =
+                new Button(
+                        "Remover Repertório"
                 );
 
         Button botaoRemoverMusica =
@@ -337,6 +341,80 @@ public class StageKeysFX extends Application {
 
         });
 
+        botaoRemoverRepertorio.setOnAction(event -> {
+
+            String repertorioSelecionado =
+                    lista.getSelectionModel()
+                            .getSelectedItem();
+
+            if (repertorioSelecionado == null) {
+
+                return;
+
+            }
+
+            Repertorio repertorioEncontrado = null;
+
+            for (Repertorio repertorio :
+                    menu.getRepertorios()) {
+
+                if (repertorio.getNome()
+                        .equals(repertorioSelecionado)) {
+
+                    repertorioEncontrado =
+                            repertorio;
+
+                    break;
+
+                }
+
+            }
+
+            if (repertorioEncontrado != null) {
+
+                ArrayList<Musica> musicasParaRemover =
+                        new ArrayList<>();
+
+                for (Musica musica :
+                        repertorioEncontrado.getMusicas()) {
+
+                    if (!menu.musicaEstaEmOutroRepertorio(
+                            musica,
+                            repertorioEncontrado)) {
+
+                        musicasParaRemover.add(musica);
+
+                    }
+
+                }
+
+                menu.getMusicas()
+                        .removeAll(
+                                musicasParaRemover
+                        );
+
+                menu.getRepertorios()
+                        .remove(
+                                repertorioEncontrado
+                        );
+
+                lista.getItems()
+                        .remove(
+                                repertorioSelecionado
+                        );
+
+                listaMusicas
+                        .getItems()
+                        .clear();
+
+                menu.salvarDados();
+
+            }
+
+
+        });
+
+
         VBox layout = new VBox();
 
         layout.getChildren().add(lista);
@@ -344,6 +422,10 @@ public class StageKeysFX extends Application {
         layout.getChildren().add(campoNome);
 
         layout.getChildren().add(botaoAdicionar);
+
+        layout.getChildren().add(
+                botaoRemoverRepertorio
+        );
 
         layout.getChildren().add(
                 campoMusica

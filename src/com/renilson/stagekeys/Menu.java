@@ -28,6 +28,8 @@ public class Menu {
 
     }
 
+
+
     private RepertorioService repertorioService =
             new RepertorioService();
 
@@ -63,6 +65,32 @@ public class Menu {
                 repertorios,
                 musicas
         );
+
+    }
+
+    public boolean musicaEstaEmOutroRepertorio(
+            Musica musica,
+            Repertorio repertorioIgnorado) {
+
+        for (Repertorio repertorio :
+                repertorios) {
+
+            if (repertorio == repertorioIgnorado) {
+
+                continue;
+
+            }
+
+            if (repertorio.getMusicas()
+                    .contains(musica)) {
+
+                return true;
+
+            }
+
+        }
+
+        return false;
 
     }
 
