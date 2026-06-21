@@ -150,9 +150,19 @@ public class StageKeysFX extends Application {
                         "Adicionar Música"
                 );
 
+        Button botaoEditarRepertorio =
+                new Button(
+                        "Editar Repertório"
+                );
+
         Button botaoRemoverRepertorio =
                 new Button(
                         "Remover Repertório"
+                );
+
+        Button botaoEditarMusica =
+                new Button(
+                        "Editar Música"
                 );
 
         Button botaoRemoverMusica =
@@ -341,6 +351,60 @@ public class StageKeysFX extends Application {
 
         });
 
+        botaoEditarRepertorio.setOnAction(event -> {
+
+            String repertorioSelecionado =
+                    lista.getSelectionModel()
+                            .getSelectedItem();
+
+            String novoNome =
+                    campoNome.getText();
+
+            if (repertorioSelecionado == null) {
+
+                return;
+
+            }
+
+            if (novoNome.isBlank()) {
+
+                return;
+
+            }
+
+            for (Repertorio repertorio :
+                    menu.getRepertorios()) {
+
+                if (repertorio.getNome()
+                        .equals(repertorioSelecionado)) {
+
+                    repertorio.setNome(
+                            novoNome
+                    );
+
+                    break;
+
+                }
+
+            }
+
+            lista.getItems().clear();
+
+            for (Repertorio repertorio :
+                    menu.getRepertorios()) {
+
+                lista.getItems().add(
+                        repertorio.getNome()
+                );
+
+            }
+
+            campoNome.clear();
+
+            menu.salvarDados();
+
+        });
+
         botaoRemoverRepertorio.setOnAction(event -> {
 
             String repertorioSelecionado =
@@ -414,6 +478,90 @@ public class StageKeysFX extends Application {
 
         });
 
+        botaoEditarMusica.setOnAction(event -> {
+
+            String repertorioSelecionado =
+                    lista.getSelectionModel()
+                            .getSelectedItem();
+
+            String musicaSelecionada =
+                    listaMusicas.getSelectionModel()
+                            .getSelectedItem();
+
+            String novoNome =
+                    campoMusica.getText();
+
+            if (repertorioSelecionado == null
+                    || musicaSelecionada == null) {
+
+                return;
+
+            }
+
+            if (novoNome.isBlank()) {
+
+                return;
+
+            }
+
+            for (Repertorio repertorio :
+                    menu.getRepertorios()) {
+
+                if (repertorio.getNome()
+                        .equals(repertorioSelecionado)) {
+
+                    for (Musica musica :
+                            repertorio.getMusicas()) {
+
+                        if (musica.getNome()
+                                .equals(musicaSelecionada)) {
+
+                            musica.setNome(
+                                    novoNome
+                            );
+
+                            break;
+
+                        }
+
+                    }
+
+                    break;
+
+                }
+
+            }
+
+            listaMusicas.getItems().clear();
+
+            for (Repertorio repertorio :
+                    menu.getRepertorios()) {
+
+                if (repertorio.getNome()
+                        .equals(repertorioSelecionado)) {
+
+                    for (Musica musica :
+                            repertorio.getMusicas()) {
+
+                        listaMusicas.getItems()
+                                .add(
+                                        musica.getNome()
+                                );
+
+                    }
+
+                    break;
+
+                }
+
+            }
+
+            campoMusica.clear();
+
+            menu.salvarDados();
+
+        });
+
 
         VBox layout = new VBox();
 
@@ -423,8 +571,13 @@ public class StageKeysFX extends Application {
 
         layout.getChildren().add(botaoAdicionar);
 
+
         layout.getChildren().add(
                 botaoRemoverRepertorio
+        );
+
+        layout.getChildren().add(
+                botaoEditarRepertorio
         );
 
         layout.getChildren().add(
@@ -445,6 +598,10 @@ public class StageKeysFX extends Application {
 
         layout.getChildren().add(
                 botaoRemoverMusica
+        );
+
+        layout.getChildren().add(
+                botaoEditarMusica
         );
 
         layout.getChildren().add(

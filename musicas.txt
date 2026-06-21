@@ -3,7 +3,7 @@
 3;musica teste;artista teste;A
 4;Americana;Sem artista;Sem tom
 5;tu cheira;Sem artista;Sem tom
-6;deixa tudo como tá;Sem artista;Sem tom
+6;deixa tudo deixa;Sem artista;Sem tom
 7;maria mariazinha;Sem artista;Sem tom
 8;João de Barro;Maria Gadu;Dm
 9;Pirulito Baby;desconhecido;Em
