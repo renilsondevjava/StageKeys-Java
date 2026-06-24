@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import java.util.ArrayList;
+import javafx.scene.layout.HBox;
 
 public class StageKeysFX extends Application {
 
@@ -43,6 +44,16 @@ public class StageKeysFX extends Application {
 
         }
 
+        Label tituloRepertorios =
+                new Label(
+                        "REPERTÓRIOS"
+                );
+
+        Label tituloCadastroMusica =
+                new Label(
+                        "CADASTRO DE MÚSICA"
+                );
+
         lista.getSelectionModel()
                 .selectedItemProperty()
                 .addListener(
@@ -64,11 +75,13 @@ public class StageKeysFX extends Application {
                                         for (Musica musica :
                                                 repertorio.getMusicas()) {
 
-                                            listaMusicas
-                                                    .getItems()
-                                                    .add(
-                                                            musica.getNome()
-                                                    );
+                                            listaMusicas.getItems().add(
+                                                    musica.getNome()
+                                                            + " | "
+                                                            + musica.getArtista()
+                                                            + " | "
+                                                            + musica.getTom()
+                                            );
 
                                         }
 
@@ -491,6 +504,13 @@ public class StageKeysFX extends Application {
             String novoNome =
                     campoMusica.getText();
 
+            String novoArtista =
+                    campoArtista.getText();
+
+            String novoTom =
+                    campoTom.getText();
+
+
             if (repertorioSelecionado == null
                     || musicaSelecionada == null) {
 
@@ -513,12 +533,22 @@ public class StageKeysFX extends Application {
                     for (Musica musica :
                             repertorio.getMusicas()) {
 
-                        if (musica.getNome()
-                                .equals(musicaSelecionada)) {
+                        if (musicaSelecionada.startsWith(
+                                musica.getNome()
+                        )) {
 
                             musica.setNome(
                                     novoNome
                             );
+
+                            musica.setArtista(
+                                    novoArtista
+                            );
+
+                            musica.setTom(
+                                    novoTom
+                            );
+
 
                             break;
 
@@ -543,10 +573,13 @@ public class StageKeysFX extends Application {
                     for (Musica musica :
                             repertorio.getMusicas()) {
 
-                        listaMusicas.getItems()
-                                .add(
-                                        musica.getNome()
-                                );
+                        listaMusicas.getItems().add(
+                                musica.getNome()
+                                        + " | "
+                                        + musica.getArtista()
+                                        + " | "
+                                        + musica.getTom()
+                        );
 
                     }
 
@@ -565,19 +598,41 @@ public class StageKeysFX extends Application {
 
         VBox layout = new VBox();
 
+        HBox botoesRepertorio =
+                new HBox(10);
+
+        botoesRepertorio.getChildren().addAll(
+                botaoAdicionar,
+                botaoRemoverRepertorio,
+                botaoEditarRepertorio
+        );
+
+        HBox botoesMusica =
+                new HBox(10);
+
+        botoesMusica.getChildren().addAll(
+                botaoAdicionarMusica,
+                botaoRemoverMusica,
+                botaoEditarMusica
+        );
+
+        layout.getChildren().add(
+                tituloRepertorios
+        );
+
+        layout.setSpacing(10);
+
         layout.getChildren().add(lista);
 
         layout.getChildren().add(campoNome);
 
-        layout.getChildren().add(botaoAdicionar);
-
 
         layout.getChildren().add(
-                botaoRemoverRepertorio
+                botoesRepertorio
         );
 
         layout.getChildren().add(
-                botaoEditarRepertorio
+                tituloCadastroMusica
         );
 
         layout.getChildren().add(
@@ -593,16 +648,9 @@ public class StageKeysFX extends Application {
         );
 
         layout.getChildren().add(
-                botaoAdicionarMusica
+                botoesMusica
         );
 
-        layout.getChildren().add(
-                botaoRemoverMusica
-        );
-
-        layout.getChildren().add(
-                botaoEditarMusica
-        );
 
         layout.getChildren().add(
                 tituloMusicas
@@ -612,7 +660,7 @@ public class StageKeysFX extends Application {
                 listaMusicas
         );
 
-        Scene cena = new Scene(layout, 400, 300);
+        Scene cena = new Scene(layout, 700, 600);
 
         stage.setTitle("StageKeys");
 

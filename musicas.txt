@@ -5,8 +5,10 @@
 5;tu cheira;Sem artista;Sem tom
 6;deixa tudo deixa;Sem artista;Sem tom
 7;maria mariazinha;Sem artista;Sem tom
-8;João de Barro;Maria Gadu;Dm
+8;joaozao test;Maria Gadu;Dm
 9;Pirulito Baby;desconhecido;Em
 10;musica nova;artista novo;A
 11;musicatest;aaa;aaa
-13;musicarenilson;a;a
+13;musica noooovvvaa;aaatistaa;novo tom
+14;musica test01;test01;B
+15;joao teste;eu mesmo;Bm
